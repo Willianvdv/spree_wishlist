@@ -1,9 +1,13 @@
 describe Spree::WishedProductsController do
   let(:user)           { create(:user) }
   let!(:wished_product) { create(:wished_product) }
+  let!(:wishlist) { wished_product.wishlist }
   let(:attributes)     { attributes_for(:wished_product) }
 
-  before { allow(controller).to receive(:spree_current_user).and_return(user) }
+  before do
+    allow(controller).to receive(:spree_current_user).and_return(user)
+    allow(user).to receive(:wishlist).and_return(wished_product.wishlist)
+  end
 
   context '#create' do
     context 'with valid params' do
@@ -26,7 +30,6 @@ describe Spree::WishedProductsController do
 
       it 'does not save if wished product already exist in wishlist' do
         variant  = create(:variant)
-        wishlist = create(:wishlist, user: user)
         wished_product = create(:wished_product, wishlist: wishlist, variant: variant)
         expect {
           spree_post :create, id: wished_product.id, wished_product: { wishlist_id: wishlist.id, variant_id: variant.id }

@@ -18,7 +18,7 @@ class Spree::WishedProductsController < Spree::StoreController
   end
 
   def update
-    @wished_product = Spree::WishedProduct.find(params[:id])
+    @wished_product = wished_products.find(params[:id])
     @wished_product.update_attributes(wished_product_attributes)
 
     respond_with(@wished_product) do |format|
@@ -27,7 +27,7 @@ class Spree::WishedProductsController < Spree::StoreController
   end
 
   def destroy
-    @wished_product = Spree::WishedProduct.find(params[:id])
+    @wished_product = wished_products.find(params[:id])
     @wished_product.destroy
 
     respond_with(@wished_product) do |format|
@@ -37,8 +37,15 @@ class Spree::WishedProductsController < Spree::StoreController
 
   private
 
+  def wished_products
+    wishlist.wished_products
+  end
+
+  def wishlist
+    spree_current_user.wishlist
+  end
+
   def wished_product_attributes
     params.require(:wished_product).permit(:variant_id, :wishlist_id, :remark)
   end
-
 end
